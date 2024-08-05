@@ -12,13 +12,7 @@ module.exports = {
       phone_number: {
         type: Sequelize.STRING
       },
-      password_hash: {
-        type: Sequelize.STRING
-      },
       full_Name: {
-        type: Sequelize.STRING
-      },
-      otp: {
         type: Sequelize.STRING
       },
       is_verified: {
