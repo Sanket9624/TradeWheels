@@ -1,12 +1,16 @@
 const express = require('express');
 const app = express();
 
-const port = 3000;
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 
-app.get('/',(req,res)=>{
-    res.send("hello");
-});
+// Routes
+const userRoute = require('./Routes/user');
 
+
+app.use('/api/user',userRoute);
+
+const port = process.env.PORT;
 app.listen(port,()=>{
-    console.log(`port is running on ${port}`);
+    console.log(`port is running on http://localhost:${port}`);
 })

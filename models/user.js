@@ -15,9 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   User.init({
     phone_number: DataTypes.STRING,
-    password_hash: DataTypes.STRING,
     full_Name: DataTypes.STRING,
-    otp: DataTypes.STRING,
     is_verified: DataTypes.BOOLEAN
   }, {
     sequelize,
