@@ -6,9 +6,11 @@ app.use(express.urlencoded({extended:true}));
 
 // Routes
 const userRoute = require('./Routes/user');
+const sellCarRoute = require('./Routes/sellCar');
 
 
 app.use('/api/user',userRoute);
+app.use('/api/sellCar',sellCarRoute);
 
 const port = process.env.PORT;
 app.listen(port,()=>{
