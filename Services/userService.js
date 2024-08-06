@@ -33,6 +33,10 @@ const findUserById = async (id) => {
     return models.User.findOne({where:{id}});
 };
 
+const findUserByNumber = async (phone_number) => {
+    return models.User.findOne({where:{phone_number}});
+};
+
 const updateUserVerification = async (id, isVerified) => {
     const user = await models.User.findOne({ where: { id } });
     if (user) {
@@ -98,6 +102,7 @@ module.exports = {
     updateUserVerification,
     updateUserFullName,
     updateUserPhoneNumber,
+    findUserByNumber,
     getUserName,
     generateToken
     
