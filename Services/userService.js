@@ -29,12 +29,12 @@ const registerUser = async (full_Name,phone_number) => {
     return user;
 };
 
-const findUserByNumber = async (phone_number) => {
-    return models.User.findOne({where:{phone_number}});
+const findUserById = async (id) => {
+    return models.User.findOne({where:{id}});
 };
 
-const updateUserVerification = async (phone_number, isVerified) => {
-    const user = await models.User.findOne({ where: { phone_number } });
+const updateUserVerification = async (id, isVerified) => {
+    const user = await models.User.findOne({ where: { id } });
     if (user) {
         user.is_verified = isVerified;
         await user.save();
@@ -43,10 +43,6 @@ const updateUserVerification = async (phone_number, isVerified) => {
 };
 
 const getUserName = async (req, res) => {
-    const token = req.headers['authorization'];
-    if (!token) {
-        return res.status(401).json({ message: 'Authorization token is required' });
-    }
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_KEY);
@@ -65,16 +61,43 @@ const getUserName = async (req, res) => {
     }
 };
 
+const updateUserFullName = async (userId, full_Name) => {
+    const user = await models.User.findByPk(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    user.full_Name = full_Name;
+    await user.save();
+
+    return user;
+};
+
+const updateUserPhoneNumber = async (id, new_phone_number) => {
+    const user = await models.User.findByPk(id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    user.phone_number = new_phone_number;
+    user.is_verified = false; 
+
+    await user.save();
+};
+
+
 const generateToken = (user) => {
-    return  jwt.sign({id : user.id , phone_number:user.phone_number},process.env.JWT_KEY,{expiresIn:'1h'});
+    return jwt.sign({ id: user.id, phone_number: user.phone_number }, process.env.JWT_KEY, { expiresIn: '1h' });
 };
 
 module.exports = {
     sendOtp,
     verifyOtp,
     registerUser,
-    findUserByNumber,
+    findUserById,
     updateUserVerification,
+    updateUserFullName,
+    updateUserPhoneNumber,
     getUserName,
     generateToken
     

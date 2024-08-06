@@ -1,17 +1,17 @@
 const jwt = require('jsonwebtoken');
 
 const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization'];
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
     if (!token) {
-        return res.status(401).json({ message: 'Access denied. No token provided.' });
+        return res.status(401).json({ message: 'Authorization token is required' });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_KEY);
-        req.user = decoded;
+        const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+        req.userData = { id: decodedToken.id, phone_number: decodedToken.phone_number };
         next();
     } catch (error) {
-        res.status(400).json({ message: 'Invalid token.' });
+        res.status(401).json({ message: 'Invalid or expired token', error });
     }
 };
 
