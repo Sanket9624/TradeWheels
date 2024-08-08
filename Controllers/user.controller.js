@@ -1,6 +1,5 @@
 const userService = require('../Services/userService');
 
-
 const sendOtp = async (req, res) => {
     const { phone_number } = req.body;
     try {
@@ -12,16 +11,16 @@ const sendOtp = async (req, res) => {
 };
 
 const verifyOtp = async (req, res) => {
-    const { phone_number, code, full_Name } = req.body;
+    const { phone_number, code, full_Name, email } = req.body;
     try {
         const verification = await userService.verifyOtp(phone_number, code);
         if (verification.status === 'approved') {
             let user = await userService.findUserByNumber(phone_number);
             if (!user) {
-                user = await userService.registerUser(full_Name, phone_number);
+                user = await userService.registerUser(full_Name, phone_number, email);
             }
             const token = userService.generateToken(user);
-            await userService.updateUserVerification(phone_number, true);
+            await userService.updateUserVerification(user.id, true); // Use user.id
             res.status(200).json({ message: 'User registered successfully', token });
         } else {
             res.status(400).json({ message: 'Invalid OTP' });
@@ -32,7 +31,7 @@ const verifyOtp = async (req, res) => {
 };
 
 const getUserName = async (req, res) => {
-    const { id, phone_number } = req.userData;
+    const { id } = req.userData;
 
     try {
         const user = await userService.findUserById(id);
@@ -41,7 +40,7 @@ const getUserName = async (req, res) => {
         }
 
         const full_name = user.full_Name;
-        const initials = full_name.split(' ').map(name => name.charAt(0).toUpperCase()).reverse().join('');
+        const initials = full_name.split(' ').map(name => name.charAt(0).toUpperCase()).join('');
         res.status(200).json({ userName: initials });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -81,8 +80,20 @@ const updateMobileNumber = async (req, res) => {
         }
 
         await userService.updateUserPhoneNumber(id, new_phone_number);
-        await userService.updateUserVerification(new_phone_number, true);
+        await userService.updateUserVerification(id, true);
         res.status(200).json({ message: 'Mobile number updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const updateEmail = async (req, res) => {
+    const { id } = req.userData;
+    const { newEmail } = req.body;
+
+    try {
+        const updatedUser = await userService.updateUserEmail(id, newEmail);
+        res.status(200).json({ message: 'Email updated successfully', user: updatedUser });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -95,4 +106,5 @@ module.exports = {
     logout,
     updateFullName,
     updateMobileNumber,
+    updateEmail
 };
