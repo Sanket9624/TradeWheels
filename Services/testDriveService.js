@@ -7,16 +7,27 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
-  },
+  }
 });
 
 const bookTestDrive = async (carId, userId, scheduledDate, scheduledTime) => {
   try {
     // Check if car exists
     const car = await Car.findOne({ where: { id: carId } });
+    
     if (!car) {
       throw new Error('Car not found');
     }
+
+    const existingTestDrive = await TestDrive.findOne({
+        where: { car_id: carId, user_id: userId }
+      });
+  
+      if (existingTestDrive) {
+        const { scheduled_date, scheduled_time } = existingTestDrive;
+        throw new Error(`Test drive already booked on ${scheduled_date} at ${scheduled_time}`);
+      }
+  
 
     // Create a test drive booking
     const testDrive = await TestDrive.create({
@@ -25,6 +36,7 @@ const bookTestDrive = async (carId, userId, scheduledDate, scheduledTime) => {
       scheduled_date: scheduledDate,
       scheduled_time: scheduledTime,
     });
+    
 
     // Fetch user and car owner details
     const user = await User.findOne({ where: { id: userId } });
@@ -37,7 +49,7 @@ const bookTestDrive = async (carId, userId, scheduledDate, scheduledTime) => {
     // Send email to user
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: "sanketsrp786@gmail.com",
+      to: user.email,
       subject: 'Test Drive Booking Confirmation',
       text: `Your test drive booking for the car ${car.brand} ${car.model} on ${scheduledDate} at ${scheduledTime} has been confirmed.`,
     });
@@ -45,10 +57,12 @@ const bookTestDrive = async (carId, userId, scheduledDate, scheduledTime) => {
     // Send email to car owner
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
-      to: "sanket.prajapati0906@gmail.com",
+      to: carOwner.email,
       subject: 'New Test Drive Booking',
       text: `A test drive for your car ${car.brand} ${car.model} has been booked by ${user.full_Name} on ${scheduledDate} at ${scheduledTime}.`,
     });
+    console.log(carOwner.email);
+    
 
     return testDrive;
   } catch (error) {
