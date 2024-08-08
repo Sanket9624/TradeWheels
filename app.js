@@ -7,10 +7,12 @@ app.use(express.urlencoded({extended:true}));
 // Routes
 const userRoute = require('./Routes/user');
 const sellCarRoute = require('./Routes/sellCar');
+const imageUploadRoute = require('./Routes/imageUpload')
 
 
 app.use('/api/user',userRoute);
 app.use('/api/sellCar',sellCarRoute);
+app.use('/api/images',imageUploadRoute);
 
 const port = process.env.PORT;
 app.listen(port,()=>{
