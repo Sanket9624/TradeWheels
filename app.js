@@ -6,9 +6,18 @@ app.use(express.urlencoded({extended:true}));
 
 // Routes
 const userRoute = require('./Routes/user');
+const sellCarRoute = require('./Routes/sellCar');
+const imageUploadRoute = require('./Routes/imageUpload');
+const filterCarRoute = require('./Routes/filterCar');
+const testDriveRoute = require('./Routes/testDrive');
+
 
 
 app.use('/api/user',userRoute);
+app.use('/api/sellCar',sellCarRoute);
+app.use('/api/images',imageUploadRoute);
+app.use('/api/filter',filterCarRoute);
+app.use('/api/testDrive',testDriveRoute);
 
 const port = process.env.PORT;
 app.listen(port,()=>{

@@ -12,9 +12,6 @@ module.exports = {
       user_id: {
         type: Sequelize.INTEGER
       },
-      number_plate: {
-        type: Sequelize.STRING
-      },
       brand: {
         type: Sequelize.STRING
       },
@@ -23,9 +20,6 @@ module.exports = {
       },
       year: {
         type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING
       },
       variant: {
         type: Sequelize.STRING
@@ -52,6 +46,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      },
+      deletedAt:{
+        allowNull : true,
+        type : Sequelize.DATE
       }
     });
   },

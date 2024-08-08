@@ -36,6 +36,10 @@ const findUserByNumber = async (phone_number) => {
     return models.User.findOne({ where: { phone_number } });
 };
 
+const findUserByNumber = async (phone_number) => {
+    return models.User.findOne({where:{phone_number}});
+};
+
 const updateUserVerification = async (id, isVerified) => {
     const user = await models.User.findOne({ where: { id } });
     if (user) {
