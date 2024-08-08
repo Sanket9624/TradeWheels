@@ -1,13 +1,13 @@
 const twilio = require('twilio');
 const dotenv = require('../dotenv');
 const jwt = require('jsonwebtoken');
-const client = new twilio(process.env.TWILIO_SID,process.env.TWILIO_TOKEN);
-const models = require('../models') 
+const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
+const models = require('../models');
 
 const sendOtp = async (phone_number) => {
     return await client.verify.v2.services(process.env.SERVICE_ID)
-            .verifications
-            .create({to:`+91${phone_number}`,channel:'sms'});
+        .verifications
+        .create({ to: `+91${phone_number}`, channel: 'sms' });
 };
 
 const verifyOtp = async (phone_number, code) => {
@@ -23,19 +23,19 @@ const verifyOtp = async (phone_number, code) => {
     }
 };
 
-
-const registerUser = async (full_Name,phone_number) => {
-    const user = await models.User.create({full_Name,phone_number});
+const registerUser = async (full_Name, phone_number, email) => {
+    const user = await models.User.create({ full_Name, phone_number, email });
     return user;
 };
 
 const findUserById = async (id) => {
-    return models.User.findOne({where:{id}});
+    return models.User.findOne({ where: { id } });
 };
 
 const findUserByNumber = async (phone_number) => {
-    return models.User.findOne({where:{phone_number}});
+    return models.User.findOne({ where: { phone_number } });
 };
+
 
 const updateUserVerification = async (id, isVerified) => {
     const user = await models.User.findOne({ where: { id } });
@@ -44,25 +44,6 @@ const updateUserVerification = async (id, isVerified) => {
         await user.save();
     }
     return user;
-};
-
-const getUserName = async (req, res) => {
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_KEY);
-        const phone_number = decoded.phone_number;
-        const full_name = await userService.getFullNameByNumber(phone_number);
-        if (!full_name) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        const initials = full_name.split(' ').map(name => name.charAt(0).toUpperCase()).join('');
-        res.status(200).json({ userName: initials });
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
-    }
 };
 
 const updateUserFullName = async (userId, full_Name) => {
@@ -77,6 +58,7 @@ const updateUserFullName = async (userId, full_Name) => {
     return user;
 };
 
+
 const updateUserPhoneNumber = async (id, new_phone_number) => {
     const user = await models.User.findByPk(id);
     if (!user) {
@@ -84,14 +66,25 @@ const updateUserPhoneNumber = async (id, new_phone_number) => {
     }
 
     user.phone_number = new_phone_number;
-    user.is_verified = false; 
+    user.is_verified = false;
 
     await user.save();
 };
 
+const updateUserEmail = async (id, newEmail) => {
+    const user = await models.User.findByPk(id);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    user.email = newEmail;
+    await user.save();
+
+    return user;
+};
 
 const generateToken = (user) => {
-    return jwt.sign({ id: user.id, phone_number: user.phone_number }, process.env.JWT_KEY, { expiresIn: '1h' });
+    return jwt.sign({ id: user.id, phone_number: user.phone_number, email: user.email }, process.env.JWT_KEY, { expiresIn: '1d' });
 };
 
 module.exports = {
@@ -103,7 +96,6 @@ module.exports = {
     updateUserFullName,
     updateUserPhoneNumber,
     findUserByNumber,
-    getUserName,
+    updateUserEmail,
     generateToken
-    
-}
+};

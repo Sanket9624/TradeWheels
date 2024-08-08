@@ -17,4 +17,6 @@ router.put('/update-name',authMiddleware.authenticateToken,userController.update
 
 router.put('/update-number',authMiddleware.authenticateToken,userController.updateMobileNumber);
 
+router.post('/update-email', authMiddleware.authenticateToken, userController.updateEmail);
+
 module.exports = router;

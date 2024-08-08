@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
   User.init({
     phone_number: DataTypes.STRING,
     full_Name: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull : false
+    },
     is_verified: DataTypes.BOOLEAN
   }, {
     sequelize,
