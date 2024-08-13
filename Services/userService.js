@@ -1,8 +1,7 @@
 const twilio = require('twilio');
-const dotenv = require('../dotenv');
 const jwt = require('jsonwebtoken');
-const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 const models = require('../models');
+const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_TOKEN);
 
 const sendOtp = async (phone_number) => {
     return await client.verify.v2.services(process.env.SERVICE_ID)
