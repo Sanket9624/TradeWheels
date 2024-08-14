@@ -13,6 +13,8 @@ router.post('/logout',authMiddleware.authenticateToken,userController.logout);
 
 router.get('/user-name', authMiddleware.authenticateToken ,userController.getUserName);
 
+router.get('/', authMiddleware.authenticateToken ,userController.getUserById);
+
 router.put('/update-name',authMiddleware.authenticateToken,userController.updateFullName);
 
 router.put('/update-number',authMiddleware.authenticateToken,userController.updateMobileNumber);

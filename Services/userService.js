@@ -27,6 +27,7 @@ const registerUser = async (full_Name, phone_number, email) => {
     return user;
 };
 
+
 const findUserById = async (id) => {
     return models.User.findOne({ where: { id } });
 };
