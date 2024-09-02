@@ -36,7 +36,7 @@ const uploadToS3 = async (file, carId) => {
             Bucket: process.env.AWS_BUCKET_NAME,
             Key: uploadParams.Key,
         };
-        const signedUrl = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams), { expiresIn: 3600 }); // 1 hour expiry
+        const signedUrl = await getSignedUrl(s3Client, new GetObjectCommand(getObjectParams)); 
         
         return signedUrl;
     } catch (err) {
